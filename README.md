@@ -1,6 +1,6 @@
 # Spam-Detection-Filter
 
-by Ruth G. Nainggolan
+Author: Ruth G. Nainggolan
 
 Building a machine learning model to discriminate between "spam" vs. "ham" texts automatically and classify arbitrary unlabeled messages as ham or spam.
 
