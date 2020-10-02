@@ -2,7 +2,7 @@
 
 Author: Ruth G. Nainggolan
 
-Building a machine learning model to discriminate between "spam" vs. "ham" texts automatically and classify arbitrary unlabeled messages as ham or spam.
+Building a machine learning model to classify arbitrary unlabeled messages as 'ham' or 'spam'.
 
 
 Files
