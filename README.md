@@ -2,8 +2,7 @@
 
 Author: Ruth G. Nainggolan
 
-Building a machine learning model to classify arbitrary unlabeled messages as 'ham' or 'spam'.
-
+Building a spam detection model that performs a classification task to separate spam text messages from real text messages.
 
 Files
 -----
