@@ -1,11 +1,11 @@
 *Full project with complete code and datasets available on my Github [repository](https://github.com/ruthgn/Movie-Recommendation-System).*
 
 With the ubiquity of mobile phone devices expanding by the day, Short Message
-Service (SMS) or "texting" remains one of the most broadly utilized communication services. In any case, this has prompted an expansion in mobile phones attacks like SMS Spam. Fortunately, using natural language processing (NLP) concepts, we can train machines to conveniently remove these unsolicited messages for us. 
+Services (SMS) or "texting" remains one of the most broadly utilized communication services. In any case, this has prompted an expansion in mobile phone attacks like SMS Spam. Fortunately, using natural language processing (NLP) concepts, we can train machines to conveniently remove these unsolicited messages for us. 
 
-NLP combines machine learning techniques with text by using math and statistics to get that text in a format that the machine learning algorithms can understand. This post lays that exact process out using Python's NLTK (Natural Language Toolkit) library. NLTK has a lot of useful features and is widely considered to be the standard library for processing text in Python. 
+NLP combines machine learning techniques with text by using math and statistics to transform text into a format that machine learning algorithms can understand. This post lays out this process using Python's NLTK (Natural Language Toolkit) library. NLTK has a lot of useful features and is widely considered to be the standard for text processing in Python. 
 
-We'll be using a dataset from the [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/SMS+Spam+Collection) storing a collection of more than five thousand SMS text messages. Our goal is to build a spam detection filter that performs a classification task to separate text messages that are in fact spam versus those that are legitimate text messages sent by real people. Using these labeled ham and spam examples, we'll **train a machine learning model to learn to discriminate between ham/spam automatically**. Then, with a trained model, we'll be able to **classify arbitrary unlabeled messages** as ham or spam.
+We'll be using a dataset from the [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/SMS+Spam+Collection) storing a collection of more than five thousand SMS text messages. Our goal is to build a spam detection filter that performs a classification task to separate spam messages from legitimate text messages (referred to as "ham"). Using these labeled examples, we'll **train a machine learning model to learn to discriminate between ham/spam automatically**. Then, with a trained model, we'll be able to **classify arbitrary unlabeled messages** as ham or spam.
 
 ## Getting Started
 
@@ -107,7 +107,9 @@ for msgNo, message in enumerate(messages[:10]):
     
     
 
-From just a preliminary view, we can already see the style of these text messages, particularly those that are labelled spam. These spam messages seem to be your standard spam mails asking you for money or claiming that you're a winner of something. What we want to do is to actually figure out how we can detect which text messages are "spam" versus which ones are "ham" (normal text messages).
+From a preliminary view, we can already glimpse the format of some spam messages. Most are pretty standard- asking for money or proclaiming that the recipient has won an award of some sort. What we want to do is figure out how to differentiate between "spam" and "ham" messages.
+
+
 
 Due to the spacing we can almost immediately tell that this is a [TSV](http://en.wikipedia.org/wiki/Tab-separated_values) ("tab separated values") file, where the first column is a label saying whether the given message is a normal message ("ham") or "spam", while the second column is the message itself (note that our numbers aren't part of the file, they are just from the **enumerate** call). Instead of parsing TSV manually using Python, we can automate the process using pandas!
 
@@ -189,7 +191,7 @@ messages.head()
 
 ## Exploratory Data Analysis
 
-Let's check out the stats with some plots and pandas built-in methods!
+Let's check out the stats with some plots and pandas built-in methods.
 
 
 ```python
@@ -317,7 +319,7 @@ messages.groupby('label').describe()
 
 
 
-As we continue our analysis we want to start thinking about the features we are going to be using. This goes along with the general idea of [feature engineering](https://en.wikipedia.org/wiki/Feature_engineering)--which is a very large part of spam detection and natural language processing in general. The better our domain knowledge on the data, the better our ability to engineer more features from it.
+As we continue our analysis we want to start thinking about the features we'll be using. Keep this in mind when you're doing any type of analysis that will lead to [feature engineering](https://en.wikipedia.org/wiki/Feature_engineering). Determining features is a very large part of spam detection and natural language processing in general. The better our domain knowledge on the data, the better our ability to engineer more features from it.
 
 
 ```python
@@ -417,7 +419,7 @@ sns.distplot(messages['length'], kde=False, bins=70)
 ![png](spam-vs-ham-detection-filter_files/spam-vs-ham-detection-filter_25_1.png)
 
 
-Looks like text length may be a good feature to think about! Let's try to investigate why the x-axis goes all the way to around one thousand--this must mean that there is some really long message.
+Looks like text length may be a good feature to think about. Let's try to investigate why the x-axis climbs up to one thousand--this must mean that there may be some really long messages.
 
 
 ```python
@@ -475,15 +477,15 @@ messages.hist(column='length', by='label', bins=70, figsize=(12,6))
 ![png](spam-vs-ham-detection-filter_files/spam-vs-ham-detection-filter_31_1.png)
 
 
-Fantastic! At this point we can safely assume that message length is a good feature to distinguish 'spam' vs 'ham' messages. Text messages that are spam tend to be longer than those that are ham. Through our exploratory data analysis we discovered a trend that spam messages tend to have more characters (unless it's a love letter!).
+Fantastic! At this point we can safely assume that message length is a good distinguishing feature. Text messages that are spam tend to be longer than those that are ham. Through our exploratory data analysis we discovered a trend that spam messages tend to have more characters (unless it's a love letter!).
 
 We will now begin to process the data to eventually use with SciKit Learn.
 
 ## Text pre-processing
 
-There are numerous methods to convert a corpus to a numerical feature vector for machine learning algorithms to perform classification task on; one of which is the the [bag-of-words](http://en.wikipedia.org/wiki/Bag-of-words_model) approach, where each unique word in a text will be represented by one number.
+In order to allow machine learning algorithms to perform classification tasks on our textual data, we need to convert the corpus into a numerical feature vector. There are various ways of accomplishing this conversion, one of which is the the [bag-of-words](http://en.wikipedia.org/wiki/Bag-of-words_model) approach, where each unique word in a text will be represented by one number.
 
-In this section, we'll convert the raw messages (sequence of characters) into vectors (sequences of numbers). This step includes removing punctuations, splitting a message into its individual words, and removing very common words (e.g., "the", "a", "be", "me", "is", etc.).
+In this section, we'll convert the raw message (sequence of characters) into vectors (sequences of numbers). This step includes removing punctuation, splitting a message into its individual words, and removing very common words, including articles and prepositions (e.g., "the", "a", "be", "me", "is", etc.).
 
 
 ```python
@@ -649,7 +651,7 @@ messages.head()
 
 
 
-What we need to do is to "tokenize" these messages. Tokenization is the term used to describe the process of converting a normal text string into a list of tokens (words that we want to have for analysis).
+What we need to do is "tokenize" these messages. Tokenization is the term used to describe the process of converting a normal text string into a list of tokens (words that we want to isolate for analysis). 
 
 
 ```python
@@ -673,23 +675,23 @@ messages['message'].head(5).apply(textProcess)
 
 ## Vectorization
 
-At this point, we have the messages as lists of tokens (also known as [lemmas](http://nlp.stanford.edu/IR-book/html/htmledition/stemming-and-lemmatization-1.html)) which we need to convert into a vector form that SciKit Learn's algorithm models can work with.
+At this point, the messages have been converted into lists of tokens (also known as [lemmas](http://nlp.stanford.edu/IR-book/html/htmledition/stemming-and-lemmatization-1.html)) which we need to convert into a vector form that SciKit Learn's algorithm models can work with.
 
 We're going to convert each message, represented as a list of tokens (lemmas) above, into a vector that machine learning models can understand.
 
 To summarize the three steps using the bag-of-words model:
 
-1. Count how many times does a word occur in each message (Known as term frequency)
+1. Count how many times a word occurs in each message (Known as term frequency)
 
-2. Weigh the counts, so that frequent tokens get lower weight (inverse document frequency)
+2. Weigh the counts, so that frequent tokens are assigned a lower weight (inverse document frequency)
 
-3. Normalize the vectors to unit length, to abstract from the original text length (L2 norm)
+3. Normalize the vectors to unit length, to subtract from the original text length (L2 norm)
 
 Let's begin the first step:
 
 Each vector will have as many dimensions as there are unique words in the SMS corpus.  We will first use SciKit Learn's **CountVectorizer**. This model will convert a collection of text documents to a matrix of token counts.
 
-We can imagine this as a 2-Dimensional matrix. Where the 1-dimension is the entire vocabulary (1 row per word) and the other dimension are the actual documents, in this case a column per text message. 
+We can imagine this as a 2-Dimensional matrix. Where the 1st dimension is the entire vocabulary (1 row per word) and the other dimension are the actual documents, in this case a column per text message. 
 
 For example:
 
@@ -770,7 +772,7 @@ print(bow4.shape)
     (1, 11425)
     
 
-This means that there are seven unique words in our selected message (after removing common stop words). Two of them appear twice, the rest only once. Let's go ahead and check and confirm which ones appear twice:
+This means that there are seven unique words in our selected message (after removing common stop words). Two of them appear twice, the rest only once. Let's go ahead and confirm which ones appear twice:
 
 
 ```python
@@ -783,7 +785,7 @@ print(bowTransformer.get_feature_names()[9554])
     say
     
 
-Now we can use **.transform** on our Bag-of-Words (bow) transformer object and apply it on the entire DataFrame of messages. Check out how the bag-of-words counts for the entire SMS corpus is a large, sparse matrix.
+Now we can use **.transform** on our Bag-of-Words (bow) transformer object and apply it to the entire DataFrame of messages. Check out how the bag-of-words counts for the entire SMS corpus is a large, sparse matrix.
 
 
 ```python
@@ -812,19 +814,19 @@ print('sparsity: {}'.format(sparsity))
     sparsity: 0.07940295412668218
     
 
-After the counting, weighting and normalization can be done with [TF-IDF](http://en.wikipedia.org/wiki/Tf%E2%80%93idf), using scikit-learn's `TfidfTransformer`.
+After the counting, weighting and normalization can be done with [TF-IDF](http://en.wikipedia.org/wiki/Tf%E2%80%93idf), using SciKit-learn's `TfidfTransformer`.
 
-TF-IDF stands for *term frequency-inverse document frequency*, and the tf-idf weight is a weight often used in information retrieval and text mining. This weight is a statistical measure used to evaluate how important a word is to a document in a collection or corpus. The importance increases proportionally to the number of times a word appears in the document but is offset by the frequency of the word in the corpus. Variations of the tf-idf weighting scheme are often used by search engines as a central tool in scoring and ranking a document's relevance given a user query.
+TF-IDF stands for *term frequency-inverse document frequency*, and the tf-idf weight is a measure often used for information retrieval and text mining. This weight is a statistical measure used to evaluate how important a word is to a document in a collection or corpus. The importance increases proportionally to the number of times a word appears in the document but is offset by the frequency of the word in the corpus. Variations of the tf-idf weighting scheme are often used by search engines as a central tool in scoring and ranking a document's relevance given a user query.
 
 One of the simplest ranking functions is computed by summing the tf-idf for each query term; many more sophisticated ranking functions are variants of this simple model.
 
 Typically, the tf-idf weight is composed by two terms: the first computes the normalized Term Frequency (TF), meaning the number of times a word appears in a document, divided by the total number of words in that document; the second term is the Inverse Document Frequency (IDF), computed as the logarithm of the number of the documents in the corpus divided by the number of documents where the specific term appears.
 
-**TF: Term Frequency**, which measures how frequently a term occurs in a document. Since every document is different in length, it is possible that a term would appear much more times in long documents than shorter ones. Thus, the term frequency is often divided by the document length (aka. the total number of terms in the document) as a way of normalization: 
+**TF: Term Frequency**, which measures how frequently a term occurs in a document. Since every document is different in length, it is possible that a term would appear more times in long documents than shorter ones. Thus, the term frequency is often divided by the document length (i.e., the total number of terms in the document) as a way of normalization: 
 
 *TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document).*
 
-**IDF: Inverse Document Frequency**, which measures how important a term is. While computing TF, all terms are considered equally important. However it is known that certain terms, such as "is", "of", and "that", may appear a lot of times but have little importance. Thus we need to weigh down the frequent terms while scale up the rare ones, by computing the following: 
+**IDF: Inverse Document Frequency**, which measures how important a term is. While computing TF, all terms are considered equally important. However it is known that certain terms, such as "is", "of", and "that", may appear frequently but have little importance. Thus we need to weigh down frequent terms while scaling up unique terms, by computing the following: 
 
 *IDF(t) = log_e(Total number of documents / Number of documents with term t in it).*
 
@@ -874,11 +876,11 @@ print(tfidfTransformer.idf_[bowTransformer.vocabulary_['university']])
 messagesTfidf = tfidfTransformer.transform(messagesBow)
 ```
 
-*Note*: As is the case with how text data can be preprocessed, there are many ways data can be vectorized. These steps involve feature engineering and building a "pipeline". SciKit Learn's documentation on dealing with text data as well as the expansive collection of books on the general topic of NLP are tremendous resources everyone needs to check out.
+*Note*: As is the case with how text data can be preprocessed, there are many ways data can be vectorized. These steps involve feature engineering and building a "pipeline". SciKit Learn's documentation on dealing with text data as well as the expansive collection of books on the general topic of NLP are great resources!
 
 ## Training our model
 
-With messages represented as vectors, we can finally train our spam/ham classifier using some sort of classification algorithm. We will be using the [Naive Bayes](http://en.wikipedia.org/wiki/Naive_Bayes_classifier) classifier algorithm with scikit-learn.
+With messages represented as vectors, we can finally train our spam/ham classifier using a classification algorithm. We will be using the [Naive Bayes](http://en.wikipedia.org/wiki/Naive_Bayes_classifier) classifier algorithm with scikit-learn.
 
 
 ```python
@@ -886,7 +888,7 @@ from sklearn.naive_bayes import MultinomialNB
 spamDetectModel = MultinomialNB().fit(messagesTfidf, messages['label'])
 ```
 
-Let's try classifying our single random message and checking how we do:
+Let's try classifying our single random message and see how we do:
 
 
 ```python
@@ -899,7 +901,7 @@ print('expected:', messages.label[3])
     expected: ham
     
 
-Voila!! We've developed a model that can attempt to predict spam vs ham classification!
+Voila!! We've developed a model that can classify spam vs ham messages!
 
 
 ```python
@@ -963,9 +965,9 @@ print (classification_report(messages['label'], pred))
 
 There are quite a few possible metrics for evaluating model performance. We can assume, for example, that the cost of mis-predicting "spam" as "ham" is probably much lower than mis-predicting "ham" as "spam".
 
-In the above "evaluation",we evaluated accuracy of our trained model on the same data we used for training. **In reality we should never actually evaluate on the same dataset we train our model on!**. Such evaluation tells us nothing about the true predictive power of our model. If we simply remembered each example during training, the accuracy on training data would trivially be 100%, even though we wouldn't be able to classify any new messages.
+In the above "evaluation",we tested the accuracy of our trained model on the same data we used for training. **In reality we should never actually evaluate on the same dataset we train our model on!**. Such evaluation tells us nothing about the true predictive power of our model. If we simply remembered each example during training, the accuracy on training data would trivially be 100%, even though we wouldn't be able to classify any new messages.
 
-The proper way to proceed is to add a step where we split the data into a training/test set, where the model only ever sees the **training data** during its model fitting and parameter tuning. The **test data** is never used in any way. This is then our final evaluation on test data is representative of true predictive performance.
+The proper way to proceed is to add a step in which we split the data into a test set, where the model only ever sees the **test data** during its model fitting and parameter tuning. The **test data** is never used in any way. This means that our final evaluation on test data is representative of true predictive performance.
 
 ## Train Test Split
 
@@ -991,7 +993,7 @@ print('Total:', len(msg_train) + len(msg_test))
 
 ## Creating a Data Pipeline
 
-Let's run our model again and then predict off the test set. We will use SciKit Learn's [pipeline](http://scikit-learn.org/stable/modules/pipeline.html) capabilities to store a pipeline of workflow. This will allow us to set up all the transformations that we will do to the data for future use.
+Let's run our model again and predict from the test set. We will use SciKit Learn's [pipeline](http://scikit-learn.org/stable/modules/pipeline.html) capabilities to store a pipeline of workflow. This will allow us to set up all the transformations needed to use the data in the future.
 
 
 ```python
@@ -1009,7 +1011,7 @@ pipeline = Pipeline([
 ])
 ```
 
-Now we can directly pass data from the text messages and the pipeline will do our pre-processing for us! We can treat it as a model/estimator API:
+We can pass data directly from the text messages and the pipeline will perform the pre-processing for us! We can treat it as a model/estimator API:
 
 
 ```python
@@ -1061,4 +1063,4 @@ print(classification_report(label_test, predictions))
     
     
 
-Now we have a classification report for our model on a true testing set! There is a lot more to Natural Language Processing than what we've covered here, and its vast expanse of topic could fill up several college courses!
+Displayed on the classification report is a true evaluation of our overall model! 
