@@ -1,7 +1,5 @@
 # Spam-Detection-Filter
 
-Author: Ruth G. Nainggolan
-
 Building a spam detection model to perform a classification task separating spam text messages from real ones.
 
 Files
